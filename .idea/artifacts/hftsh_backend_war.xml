@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="hftsh_backend:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="com.hftsh.backend-release-0.0.1.war">
+      <element id="artifact" artifact-name="hftsh_backend:war exploded" />
+    </root>
+  </artifact>
+</component>
