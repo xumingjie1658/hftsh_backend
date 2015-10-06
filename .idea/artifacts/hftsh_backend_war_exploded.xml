@@ -92,6 +92,7 @@
           <element id="library" level="project" name="Maven: org.mortbay.jetty:jetty-annotations:6.1.24" />
           <element id="library" level="project" name="Maven: org.apache.geronimo.specs:geronimo-annotation_1.0_spec:1.0" />
           <element id="library" level="project" name="Maven: org.mortbay.jetty:start:6.1.24" />
+          <element id="library" level="project" name="Maven: com.belerweb:pinyin4j:2.5.0" />
         </element>
       </element>
       <element id="directory" name="META-INF">

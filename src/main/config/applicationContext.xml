@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-4.1.xsd
+                           http://www.springframework.org/schema/tx
+	                        http://www.springframework.org/schema/tx/spring-tx.xsd
+	                        http://www.springframework.org/schema/aop
+	                        http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <beans:property name="ignoreResourceNotFound" value="true" />
+        <beans:property name="locations" >
+            <beans:list>
+                <beans:value>classpath*:/application.properties</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+
+    <!--扫描spring注解-->
+    <context:component-scan base-package="com.hftsh.backend.dao" />
+    <context:component-scan base-package="com.hftsh.backend.service" />
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <!-- Connection Info -->
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+
+        <!-- Connection Pooling Info -->
+        <property name="initialSize" value="${dbcp.initialSize}" />
+        <property name="maxActive" value="${dbcp.maxActive}" />
+        <property name="maxIdle" value="${dbcp.maxIdle}" />
+        <property name="defaultAutoCommit" value="false" />
+        <property name="testOnBorrow">
+            <value>true</value>
+        </property>
+        <property name="testOnReturn">
+            <value>true</value>
+        </property>
+        <property name="testWhileIdle">
+            <value>true</value>
+        </property>
+        <property name="minEvictableIdleTimeMillis">
+            <value>180000</value>
+        </property>
+        <property name="timeBetweenEvictionRunsMillis">
+            <value>360000</value>
+        </property>
+        <property name="validationQuery">
+            <value>SELECT 1</value>
+        </property>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!--<property name="configLocation" value="classpath:SqlMapConfig.xml" />-->
+        <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml" />
+        <property name="typeAliasesPackage" value="com.hftsh.backend.domain" />
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.hftsh.backend.mapper" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+
+    <!-- 事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="search*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="list*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="is*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="has*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config proxy-target-class="true">
+        <aop:pointcut id="interceptorPointCuts"
+                      expression="execution(* com.hftsh.backend.service.*Service.*(..))" />
+        <aop:advisor advice-ref="txAdvice"
+                     pointcut-ref="interceptorPointCuts" />
+    </aop:config>
+
+</beans>
