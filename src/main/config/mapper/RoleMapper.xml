@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hftsh.backend.mapper.RoleMapper">
+<resultMap id="RoleMap" type="Role">
+	<result column="ID" jdbcType="DECIMAL" property="id"/>
+	<result column="NAME" jdbcType="VARCHAR" property="name"/>
+	<result column="ROLES" jdbcType="VARCHAR" property="roles"/>
+	<result column="STATUS" jdbcType="DECIMAL" property="status"/>
+	<result column="CREATE_TIME" jdbcType="DECIMAL" property="createTime"/>
+</resultMap>
+<sql id="Base_Column_List">
+	ID,NAME,ROLES,STATUS,CREATE_TIME
+</sql>
+<sql id="sr_Base_Column_List">
+	sr.ID,sr.NAME,sr.ROLES,sr.STATUS,sr.CREATE_TIME
+</sql>
+<select id="get" parameterType="long" resultMap="RoleMap">
+	select
+		<include refid="Base_Column_List"/>
+	from sys_role sr
+	where ID = #{id,jdbcType=DECIMAL}
+</select>
+<delete id="delete" parameterType="long">
+	delete
+	from sys_role sr
+	where ID = #{id,jdbcType=DECIMAL}
+</delete>
+<insert id="insert" keyProperty="id" parameterType="Role" useGeneratedKeys="true">
+	insert into sys_role(
+		<include refid="Base_Column_List"/>
+	) values (
+	#{id,jdbcType=DECIMAL},
+	#{name,jdbcType=VARCHAR},
+	#{roles,jdbcType=VARCHAR},
+	#{status,jdbcType=DECIMAL},
+	#{createTime,jdbcType=DECIMAL}
+	)
+</insert>
+<update id="update" parameterType="Role">
+	update sys_role sr
+	<set>
+		<if test="name != null">
+		NAME = #{name,jdbcType=VARCHAR},
+		</if>
+		<if test="roles != null">
+		ROLES = #{roles,jdbcType=VARCHAR},
+		</if>
+		<if test="status != null">
+		STATUS = #{status,jdbcType=DECIMAL},
+		</if>
+		<if test="createTime != null">
+		CREATE_TIME = #{createTime,jdbcType=DECIMAL},
+		</if>
+	</set>
+	where ID = #{id,jdbcType=DECIMAL}
+</update>
+<select id="findListForExample" parameterType="Role" resultMap="RoleMap">
+	select
+	<include refid="sr_Base_Column_List"/>
+	from sys_role sr
+	<include refid="common_query_condition"/>
+</select>
+<select id="findListForMap" parameterType="map" resultMap="RoleMap">
+	select
+	<include refid="sr_Base_Column_List"/>
+	from sys_role sr
+	<include refid="common_query_condition"/>
+</select>
+<sql id="common_query_condition">
+	<where>
+		<if test="id != null">
+		AND sr.ID = #{id}
+		</if>
+		<if test="name != null">
+		AND sr.NAME LIKE CONCAT('%',#{name},'%')
+		</if>
+		<if test="roles != null">
+		AND sr.ROLES LIKE CONCAT('%',#{roles},'%')
+		</if>
+		<if test="status != null">
+		AND sr.STATUS = #{status}
+		</if>
+		<if test="createTime != null">
+		AND sr.CREATE_TIME = #{createTime}
+		</if>
+	</where>
+</sql>
+
+<select id="getRoleByUserId" parameterType="long" resultMap="RoleMap">
+    select
+    <include refid="sr_Base_Column_List"/>
+    from sys_role sr
+    left join sys_user_role sur on sur.role_id = sr.id
+    where sur.user_id = #{userId}
+</select>
+</mapper>

@@ -1,6 +1,7 @@
 package com.hftsh.backend.dao;
 
 import com.hftsh.backend.domain.SystemUser;
+import com.hftsh.backend.mapper.SystemUserMapper;
 import com.hftsh.backend.orm.mybatis.MyBatisDao;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 
 public class SystemUserDao extends MyBatisDao<SystemUser> {
+    public SystemUser findByLoginName(String name){
+        return  this.getMapper(SystemUserMapper.class).findByLoginName(name);
+    }
 }

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:s="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd"
+       default-lazy-init="true">
+
+    <description>SpringSecurity安全配置</description>
+    <!-- http安全配置 -->
+    <s:http entry-point-ref="authenticationEntryPointImpl"
+            use-expressions="true">
+        <s:access-denied-handler error-page="/accessDenied.do" />
+        <s:csrf request-matcher-ref="myCsrfRequestMatcher"/>
+        <s:headers>
+            <s:frame-options policy="SAMEORIGIN"/>
+            <s:xss-protection enabled="true"/>
+        </s:headers>
+
+        <s:intercept-url pattern="/login.do" access="permitAll" />
+
+        <s:intercept-url pattern="/loginSuccess.do" access="hasRole('ROLE_1001')" />
+
+        <!--会话管理配置 TODO-->
+        <!--<s:remember-me user-service-ref="userDetailsService" key="${b2cDomainKey}"/>-->
+
+        <!-- 登录过滤器-->
+        <s:custom-filter before="FORM_LOGIN_FILTER" ref="loginFilter" />
+        <!-- 注销过滤器 -->
+        <s:custom-filter before="LOGOUT_FILTER" ref="logoutFilter"/>
+
+        <s:intercept-url pattern="/resources/**" access="permitAll" />
+        <s:intercept-url pattern="/**" access="hasAnyRole('ROLE_ENTERS_USER')" />
+
+    </s:http>
+
+    <bean id="myCsrfRequestMatcher" class="com.hftsh.backend.common.spring.MyCsrfRequestMatcher">
+        <property name="execludeUrls">
+            <list>
+                <value>/ueditor/</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 验证前台用户 -->
+    <bean id="loginFilter"
+          class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="authenticationFailureHandler" ref="failureHandler" />
+        <property name="authenticationSuccessHandler" ref="authenticationSuccessHandlerImpl" />
+        <property name="filterProcessesUrl" value="/login" />
+    </bean>
+
+    <bean id="failureHandler"
+          class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/loginerror" />
+    </bean>
+
+    <!-- 注销过滤器，完成前台用户注销时的定向功能 -->
+    <bean id="logoutFilter"
+          class="org.springframework.security.web.authentication.logout.LogoutFilter">
+        <constructor-arg value="/" />
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl" value="/logout" />
+    </bean>
+
+
+    <bean id="authenticationEntryPointImpl" class="com.hftsh.backend.common.spring.AuthenticationEntryPointImpl"></bean>
+
+    <bean id="authenticationSuccessHandlerImpl" class="com.hftsh.backend.common.spring.AuthenticationSuccessHandlerImpl"/>
+
+    <!-- 认证配置, 使用userDetailsService提供的用户信息 -->
+    <s:authentication-manager alias="authenticationManager">
+        <s:authentication-provider user-service-ref="userDetailsService">
+            <s:password-encoder ref="myPasswordEncoder">
+                <s:salt-source user-property="salt"/>
+            </s:password-encoder>
+        </s:authentication-provider>
+    </s:authentication-manager>
+
+    <bean id="myPasswordEncoder" class="com.hftsh.backend.common.spring.MyPasswordEncoder">
+        <constructor-arg name="algorithm" value="md5"></constructor-arg>
+    </bean>
+    <bean id="userDetailsService" class="com.hftsh.backend.common.spring.UserDetailsServiceImpl" />
+
+</beans>

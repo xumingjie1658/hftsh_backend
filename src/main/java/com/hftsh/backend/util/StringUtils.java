@@ -210,7 +210,7 @@ public class StringUtils {
 
     public static String encodePassword(String rawPass, String salt) {
         rawPass = CommonUtils.MD5(rawPass);
-        salt = ApplicationProperties.getProperty("huajiaquanKey")+CommonUtils.MD5(salt);
+        salt = ApplicationProperties.getProperty("hftshKey")+CommonUtils.MD5(salt);
         return CommonUtils.MD5(rawPass+salt);
     }
 

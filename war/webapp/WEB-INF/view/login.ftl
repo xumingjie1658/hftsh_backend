@@ -5,14 +5,6 @@
     </head>
     <body>
         <form action="/login" method="post">
-        <#if RequestParameters.error?exists >
-            <p>
-                账户或秘密不正确
-            </p>
-        </#if>
-            <p>
-            ${info!''}
-            </p>
             <fieldset>
                 <div class="form-group">
                     <input class="form-control" id="username" placeholder="E-mail" name="username" type="text"
