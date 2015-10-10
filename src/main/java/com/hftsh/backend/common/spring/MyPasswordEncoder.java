@@ -3,9 +3,6 @@ package com.hftsh.backend.common.spring;
 import com.hftsh.backend.util.StringUtils;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 
-/**
- * Created by 王金鹏 on 2015/5/19.
- */
 public class MyPasswordEncoder extends MessageDigestPasswordEncoder{
 
 

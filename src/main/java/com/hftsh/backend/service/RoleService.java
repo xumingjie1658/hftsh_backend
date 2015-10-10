@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by 王金鹏 on 2015/4/27.
- */
 @Component
 public class RoleService {
 

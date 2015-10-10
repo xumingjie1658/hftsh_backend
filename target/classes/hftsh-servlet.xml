@@ -17,7 +17,7 @@
     <beans:bean
             class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <beans:property name="order" value="2" />
-        <beans:property name="prefix" value="/WEB-INF/views/" />
+        <beans:property name="prefix" value="/WEB-INF/src/view/" />
         <beans:property name="suffix" value=".jsp" />
     </beans:bean>
 
@@ -36,7 +36,7 @@
 
     <beans:bean id="freemarkerConfig"
                 class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-        <beans:property name="templateLoaderPath" value="/WEB-INF/view/" />
+        <beans:property name="templateLoaderPath" value="/WEB-INF/src/view/" />
 
         <beans:property name="freemarkerSettings"> <!--设置FreeMarker环境属性-->
             <beans:props>

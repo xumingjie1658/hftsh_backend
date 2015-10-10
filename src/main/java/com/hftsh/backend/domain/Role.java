@@ -2,9 +2,6 @@ package com.hftsh.backend.domain;
 
 import com.hftsh.backend.orm.mybatis.IdEntity;
 
-/**
- * Created by 王金鹏 on 2015/4/27.
- */
 public class Role extends IdEntity {
     private static final long serialVersionUID = -235957174125822808L;
     private String name;

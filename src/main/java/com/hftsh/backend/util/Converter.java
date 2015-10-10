@@ -9,9 +9,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * Created by 王金鹏 on 2015/4/9.
- */
 public class Converter {
     public static String toString(Object val) {
         String rtn = "";

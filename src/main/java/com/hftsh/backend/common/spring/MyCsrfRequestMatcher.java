@@ -6,9 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Created by 王金鹏 on 2015/6/5.
- */
 public class MyCsrfRequestMatcher implements RequestMatcher {
     private Pattern allowedMethods = Pattern
             .compile("^(GET|HEAD|TRACE|OPTIONS)$");
