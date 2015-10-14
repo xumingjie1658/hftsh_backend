@@ -5,7 +5,9 @@ exports.build  = function(config)
     var uglify = require('gulp-uglify');
     var source = require('vinyl-source-stream');
     var browserify = require('browserify');
+    var transpile  = require('gulp-es6-module-transpiler');
     var reactify = require('reactify');
+    var babelify = require('babelify');
     var md5 = require('MD5');
     var gutil = require('gulp-util');
     var argv = require('yargs').argv;
@@ -16,6 +18,7 @@ exports.build  = function(config)
     var stylus = require('gulp-stylus');
     var nib = require('nib');
     var inject = require('gulp-inject');
+    var rename = require('gulp-rename');
     /************************** modules end *****************************/
 
 
@@ -26,7 +29,8 @@ exports.build  = function(config)
 
     var tasks = {
         cleanJs : config.module + '.clean.js',
-        browserify : config.module + '.browserify.js',
+        //browserify : config.module + '.browserify.js',\
+        moduleJs : config.module + '.module.js.',
         uglify : config.module + '.uglify.js',
         layoutJs : config.module + '.layout.js',
         cleanCss : config.module + '.clean.css',
@@ -39,31 +43,49 @@ exports.build  = function(config)
 
     /****************************** js tasks start****************************/
     gulp.task(tasks.cleanJs, function () {
-        return gulp.src(config.dest + '/' + '/*.js', {read: false})
+        return gulp.src(config.dest + '*.js', {read: false})
             .pipe(rimraf({force: true}));
     });
 
 
-    gulp.task(tasks.browserify, [tasks.cleanJs], function () {
+    /*gulp.task(tasks.browserify, [tasks.cleanJs], function () {
         return browserify({
-            entries: [config.jsPath + config.module + '/main.js'], // Only need initial file, browserify finds the deps
+            entries: [config.jsPath + 'main.js'], // Only need initial file, browserify finds the deps
             transform: [reactify] // We want to convert JSX to normal javascript
         })
             .bundle() // Create the initial bundle when starting the task
             .pipe(source('main.js'))
             .pipe(gulp.dest(config.dest));
+    });*/
+
+    gulp.task(tasks.moduleJs,[tasks.cleanJs], function() {
+        return browserify({
+            entries: [config.jsPath + 'main.js'], // Only need initial file, browserify finds the deps
+            transform: [babelify.configure({ optional: [
+                "es7.classProperties"
+            ]}),reactify] // We want to convert JSX to normal javascript
+        })
+        .bundle() // Create the initial bundle when starting the task
+        .pipe(source('main.js'))
+        .pipe(gulp.dest(config.dest));
+        /*return gulp.src(config.jsPath + 'main.js')
+            .pipe(transpile({
+                formatter: 'bundle'
+            }))
+            .pipe(rename("main.js"))
+            .pipe(gulp.dest(config.dest));*/
     });
 
-    gulp.task(tasks.uglify, [tasks.browserify], function () {
-        return gulp.src(config.dest + '/main.js')
+    gulp.task(tasks.uglify, [tasks.moduleJs], function () {
+        return gulp.src(config.jsPath + config.dest)
             .pipe(config.isPrd ? uglify() : gutil.noop())
             .pipe(gulp.dest(config.dest));
     });
 
     gulp.task(tasks.layoutJs, [tasks.uglify], function () {
-        var sourceJs = config.dest + "/main.js";
+        var sourceJs = config.dest + "main.js";
         var hashJs = md5(fs.readFileSync(sourceJs, "utf8"));
-        var finalJs = config.dest + '/' + config.module + hashJs + '.js';
+        var finalJs = config.dest + config.module + hashJs + '.js';
         fs.renameSync(sourceJs, finalJs);
 
         return gulp.src(config.view)
@@ -73,22 +95,22 @@ exports.build  = function(config)
                     transform: function (filepath, i, length) {
                         var source = null;
                         var fileName = require('path').basename(filepath);
-                        source = config.resourcesPath + config.module + '/' + fileName;
-                        return "<script src='" + source + "' type='text/jsx'></script>";
+                        source = config.resourcesPath + fileName;
+                        return "<script src='" + source + "' type='text/javascript'></script>";
                     }
                 }))
-            .pipe(gulp.dest(config.viewPath + config.module ));
+            .pipe(gulp.dest(config.viewPath));
     });
     /****************************** js tasks end****************************/
 
     /****************************** css tasks start****************************/
     gulp.task(tasks.cleanCss, function () {
-        return gulp.src(config.dest + '/*.css', {read: false})
+        return gulp.src(config.dest + '*.css', {read: false})
             .pipe(rimraf({force: true}));
     })
 
     gulp.task(tasks.compileStylus, [tasks.cleanCss], function () {
-        return gulp.src(config.stylusPath + config.module + '/main.styl')
+        return gulp.src(config.stylusPath + 'main.styl')
             .pipe(stylus({
                 use: [nib()],
                 sourcemap: {inline: true}
@@ -99,9 +121,9 @@ exports.build  = function(config)
     });
 
     gulp.task(tasks.layoutCss, [tasks.compileStylus], function () {
-        var sourceCss = config.dest + '/main.css';
+        var sourceCss = config.dest + 'main.css';
         var hashCss = md5(fs.readFileSync(sourceCss, 'utf-8'));
-        var finalCss = config.dest + '/' + config.module + hashCss + '.css';
+        var finalCss = config.dest + config.module + hashCss + '.css';
         fs.renameSync(sourceCss, finalCss);
 
         return gulp.src(config.view)
@@ -111,11 +133,11 @@ exports.build  = function(config)
                     transform: function (filepath, i, length) {
                         var source = null;
                         var fileName = require('path').basename(filepath);
-                        source = config.resourcesPath + config.module + '/' + fileName;
+                        source = config.resourcesPath + fileName;
                         return '<link rel="stylesheet" href="' + source + '">';
                     }
                 }))
-            .pipe(gulp.dest(config.viewPath + config.module));
+            .pipe(gulp.dest(config.viewPath));
     });
     /****************************** js tasks end****************************/
 

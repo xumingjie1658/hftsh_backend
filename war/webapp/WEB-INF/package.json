@@ -30,7 +30,15 @@
     "shelljs": "^0.2.6",
     "gulp-stylus": "^2.0.5",
     "nib": "^1.1.0",
-    "require-dir": "^0.3.0"
+    "require-dir": "^0.3.0",
+    "gulp-es6-module-transpiler" : "^0.2.2",
+    "gulp-rename" : "^1.2.2",
+    "babelify" : "^6.3.0",
+    "react" : "^0.14.0",
+    "classnames" : "2.1.5",
+    "clamp": "^1.0.1",
+    "react-dom": "^0.14.0",
+    "radium" : "^0.14.1"
   },
 
   "scripts": {

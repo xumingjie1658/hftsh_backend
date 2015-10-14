@@ -6,22 +6,27 @@
         <meta name="description" content="徽风堂书画后台">
         <meta name="keywords" content="徽风堂书画后台">
         <link rel="stylesheet" href="/resources/vendor/material-design-lite/material.min.css" />
-
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <!-- inject:css -->
-        <link rel="stylesheet" href="/resources/assets/home/homed41d8cd98f00b204e9800998ecf8427e.css">
+        <link rel="stylesheet" href="/resources/assets/home/homefacb605a5e4f411084c51a8cebe15336.css">
         <!-- endinject -->
 
     </head>
     <body>
-        <#include "../common/menu.ftl">
-        <main class="mdl-layout__content">
-            <div class="page-content"><!-- Your content goes here --></div>
-        </main>
-    </body>
-    <script src="/resources/vendor/material-design-lite/material.min.js"></script>
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+            <#include "../common/header.ftl">
+            <#include "../common/menu.ftl">
+            <main class="mdl-layout__content">
+                <div class="page-content">
+                    <div id="app"></div>
+                </div>
+            </main>
+        </div>
 
+    </body>
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.5/material.min.js"></script>
     <!-- inject:js -->
-    <script src='/resources/assets/home/home5559dece7526f6addb1474df8abdee7a.js' type='text/jsx'></script>
+    <script src='/resources/assets/home/home63b3a771fac885309e52d6b9bf81f041.js' type='text/javascript'></script>
     <!-- endinject -->
 
 </html>
